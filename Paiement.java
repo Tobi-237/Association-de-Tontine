@@ -1,99 +1,202 @@
-package servlets;
+package models;
 
 import java.security.Timestamp;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 public class Paiement {
     private int id;
     private int memberId;
     private double montant;
     private String typePaiement;
-    private String datePaiementFormatted;
+    private Timestamp datePaiement;
+    private String methodePaiement;
+    private String reference;
     private String statut;
+    private String moisAnnee;
+    private Integer tontineId;
+    private String modePaiement;
+    
+    
+    public Paiement(int id, int memberId, double montant, String typePaiement, Timestamp datePaiement,
+			String methodePaiement, String reference, String statut, String moisAnnee, Integer tontineId,
+			String modePaiement) {
+		super();
+		this.id = id;
+		this.memberId = memberId;
+		this.montant = montant;
+		this.typePaiement = typePaiement;
+		this.datePaiement = datePaiement;
+		this.methodePaiement = methodePaiement;
+		this.reference = reference;
+		this.statut = statut;
+		this.moisAnnee = moisAnnee;
+		this.tontineId = tontineId;
+		this.modePaiement = modePaiement;
+	}
+    
+    
 
-    // Getters et Setters
-    public int getId() {
-        return id;
+	public int getId() {
+		return id;
+	}
+
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+	public int getMemberId() {
+		return memberId;
+	}
+
+
+
+	public void setMemberId(int memberId) {
+		this.memberId = memberId;
+	}
+
+
+
+	public double getMontant() {
+		return montant;
+	}
+
+
+
+	public void setMontant(double montant) {
+		this.montant = montant;
+	}
+
+
+
+	public String getTypePaiement() {
+		return typePaiement;
+	}
+
+
+
+	public void setTypePaiement(String typePaiement) {
+		this.typePaiement = typePaiement;
+	}
+
+
+
+	public Timestamp getDatePaiement() {
+		return datePaiement;
+	}
+
+
+
+	public void setDatePaiement(Timestamp datePaiement) {
+		this.datePaiement = datePaiement;
+	}
+
+
+
+	public String getMethodePaiement() {
+		return methodePaiement;
+	}
+
+
+
+	public void setMethodePaiement(String methodePaiement) {
+		this.methodePaiement = methodePaiement;
+	}
+
+
+
+	public String getReference() {
+		return reference;
+	}
+
+
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+
+
+	public String getStatut() {
+		return statut;
+	}
+
+
+
+	public void setStatut(String statut) {
+		this.statut = statut;
+	}
+
+
+
+	public String getMoisAnnee() {
+		return moisAnnee;
+	}
+
+
+
+	public void setMoisAnnee(String moisAnnee) {
+		this.moisAnnee = moisAnnee;
+	}
+
+
+
+	public Integer getTontineId() {
+		return tontineId;
+	}
+
+
+
+	public void setTontineId(Integer tontineId) {
+		this.tontineId = tontineId;
+	}
+
+
+
+	public String getModePaiement() {
+		return modePaiement;
+	}
+
+
+
+	public void setModePaiement(String modePaiement) {
+		this.modePaiement = modePaiement;
+	}
+
+
+
+	// Getters et setters
+    public String getDate() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(datePaiement);
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public String getAmount() {
+        return NumberFormat.getNumberInstance(Locale.FRENCH).format(montant);
     }
-
-    public int getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
-    }
-
-    public double getMontant() {
-        return montant;
-    }
-
-    public void setMontant(double montant) {
-        this.montant = montant;
-    }
-
-    public String getTypePaiement() {
+    
+    public String getType() {
         return typePaiement;
     }
-
-    public void setTypePaiement(String typePaiement) {
-        this.typePaiement = typePaiement;
+    
+    public boolean isCompleted() {
+        return "COMPLETED".equals(statut);
     }
 
-    public String getDatePaiementFormatted() {
-        return datePaiementFormatted;
-    }
 
-    public void setDatePaiementFormatted(String datePaiementFormatted) {
-        this.datePaiementFormatted = datePaiementFormatted;
-    }
 
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    // Méthode pour formater le montant
-    public String getMontantFormatted() {
-        return String.format("%,.2f", montant);
-    }
-
-    // Méthode statique pour récupérer les paiements d'un membre
-    public static List<Paiement> getByMemberId(Connection conn, int memberId) throws SQLException {
-        List<Paiement> paiements = new ArrayList<>();
-        String query = "SELECT id, montant, type_paiement, date_paiement, statut FROM paiements WHERE member_id = ? ORDER BY date_paiement DESC LIMIT 5";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, memberId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Paiement paiement = new Paiement();
-                paiement.setId(rs.getInt("id"));
-                paiement.setMemberId(memberId);
-                paiement.setMontant(rs.getDouble("montant"));
-                paiement.setTypePaiement(rs.getString("type_paiement"));
-                
-                java.sql.Timestamp ts = rs.getTimestamp("date_paiement");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                paiement.setDatePaiementFormatted(sdf.format(ts));
-                
-                paiement.setStatut(rs.getString("statut"));
-                
-                paiements.add(paiement);
-            }
-        }
-        return paiements;
-    }
+	@Override
+	public String toString() {
+		return "Paiement [id=" + id + ", memberId=" + memberId + ", montant=" + montant + ", typePaiement="
+				+ typePaiement + ", datePaiement=" + datePaiement + ", methodePaiement=" + methodePaiement
+				+ ", reference=" + reference + ", statut=" + statut + ", moisAnnee=" + moisAnnee + ", tontineId="
+				+ tontineId + ", modePaiement=" + modePaiement + "]";
+	}
+    
+    // ...
+    
 }

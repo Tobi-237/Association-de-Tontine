@@ -1,141 +1,203 @@
-package servlets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+package models;
+
+import java.security.Timestamp;
+import java.sql.Date;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-
-import java.util.List;
-
+import java.util.Locale;
 
 public class Sanction {
     private int id;
-    private int memberId;
     private String typeSanction;
-    private double montant;
     private String details;
-    private String dateSanctionFormatted;
+    private String duree;
+    private double montant;
+    private Timestamp dateCreation;
+    private Integer memberId;
+    private Date dateSanction;
+    private String motif;
     private String statut;
-    private String dateFinFormatted;
+    private Timestamp dateFin;
+    
+    
+    
+    public Sanction(int id, String typeSanction, String details, String duree, double montant, Timestamp dateCreation,
+			Integer memberId, Date dateSanction, String motif, String statut, Timestamp dateFin) {
+		super();
+		this.id = id;
+		this.typeSanction = typeSanction;
+		this.details = details;
+		this.duree = duree;
+		this.montant = montant;
+		this.dateCreation = dateCreation;
+		this.memberId = memberId;
+		this.dateSanction = dateSanction;
+		this.motif = motif;
+		this.statut = statut;
+		this.dateFin = dateFin;
+	}
+    
+    
 
-    // Getters et Setters
-    public int getId() {
-        return id;
+	public int getId() {
+		return id;
+	}
+
+
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+	public String getTypeSanction() {
+		return typeSanction;
+	}
+
+
+
+	public void setTypeSanction(String typeSanction) {
+		this.typeSanction = typeSanction;
+	}
+
+
+
+	public String getDetails() {
+		return details;
+	}
+
+
+
+	public void setDetails(String details) {
+		this.details = details;
+	}
+
+
+
+	public String getDuree() {
+		return duree;
+	}
+
+
+
+	public void setDuree(String duree) {
+		this.duree = duree;
+	}
+
+
+
+	public double getMontant() {
+		return montant;
+	}
+
+
+
+	public void setMontant(double montant) {
+		this.montant = montant;
+	}
+
+
+
+	public Timestamp getDateCreation() {
+		return dateCreation;
+	}
+
+
+
+	public void setDateCreation(Timestamp dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+
+
+	public Integer getMemberId() {
+		return memberId;
+	}
+
+
+
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
+
+
+
+	public Date getDateSanction() {
+		return dateSanction;
+	}
+
+
+
+	public void setDateSanction(Date dateSanction) {
+		this.dateSanction = dateSanction;
+	}
+
+
+
+	public String getMotif() {
+		return motif;
+	}
+
+
+
+	public void setMotif(String motif) {
+		this.motif = motif;
+	}
+
+
+
+	public String getStatut() {
+		return statut;
+	}
+
+
+
+	public void setStatut(String statut) {
+		this.statut = statut;
+	}
+
+
+
+	public Timestamp getDateFin() {
+		return dateFin;
+	}
+
+
+
+	public void setDateFin(Timestamp dateFin) {
+		this.dateFin = dateFin;
+	}
+
+
+
+	// Getters et setters
+    public String getDate() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(dateSanction);
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public String getAmount() {
+        return NumberFormat.getNumberInstance(Locale.FRENCH).format(montant);
     }
-
-    public int getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
-    }
-
-    public String getTypeSanction() {
+    
+    public String getType() {
         return typeSanction;
     }
-
-    public void setTypeSanction(String typeSanction) {
-        this.typeSanction = typeSanction;
-    }
-
-    public double getMontant() {
-        return montant;
-    }
-
-    public void setMontant(double montant) {
-        this.montant = montant;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public String getDateSanctionFormatted() {
-        return dateSanctionFormatted;
-    }
-
-    public void setDateSanctionFormatted(String dateSanctionFormatted) {
-        this.dateSanctionFormatted = dateSanctionFormatted;
-    }
-
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public String getDateFinFormatted() {
-        return dateFinFormatted;
-    }
-
-    public void setDateFinFormatted(String dateFinFormatted) {
-        this.dateFinFormatted = dateFinFormatted;
-    }
-
-    // Méthode pour formater le montant
-    public String getMontantFormatted() {
-        return String.format("%,.2f", montant);
-    }
-
-    // Vérifie si la sanction est active
-    public boolean isActive() {
-        return "ACTIVE".equalsIgnoreCase(this.statut);
-    }
-  private String appliedBy;  // Nom de l'admin qui a appliqué la sanction
     
-    // ... autres méthodes existantes ...
-
-    // Getter et Setter pour appliedBy
-    public String getAppliedBy() {
-        return appliedBy;
+    public boolean isActive() {
+        return "active".equals(statut);
     }
 
-    public void setAppliedBy(String appliedBy) {
-        this.appliedBy = appliedBy;
-    }
 
-    // Méthode statique pour récupérer les sanctions d'un membre
-    public static List<Sanction> getByMemberId(Connection conn, int memberId) throws SQLException {
-        List<Sanction> sanctions = new ArrayList<>();
-        String query = "SELECT id, type_sanction, montant, details, date_sanction, statut, date_fin FROM sanctions WHERE member_id = ? ORDER BY date_sanction DESC";
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, memberId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Sanction sanction = new Sanction();
-                sanction.setId(rs.getInt("id"));
-                sanction.setMemberId(memberId);
-                sanction.setTypeSanction(rs.getString("type_sanction"));
-                sanction.setMontant(rs.getDouble("montant"));
-                sanction.setDetails(rs.getString("details"));
-                
-                Timestamp ts = rs.getTimestamp("date_sanction");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                sanction.setDateSanctionFormatted(sdf.format(ts));
-                
-                sanction.setStatut(rs.getString("statut"));
-                
-                if (rs.getTimestamp("date_fin") != null) {
-                    ts = rs.getTimestamp("date_fin");
-                    sanction.setDateFinFormatted(sdf.format(ts));
-                }
-                
-                sanctions.add(sanction);
-            }
-        }
-        return sanctions;
-    }
+
+	@Override
+	public String toString() {
+		return "Sanction [id=" + id + ", typeSanction=" + typeSanction + ", details=" + details + ", duree=" + duree
+				+ ", montant=" + montant + ", dateCreation=" + dateCreation + ", memberId=" + memberId
+				+ ", dateSanction=" + dateSanction + ", motif=" + motif + ", statut=" + statut + ", dateFin=" + dateFin
+				+ "]";
+	}
+    
+    // ...
+    
 }
